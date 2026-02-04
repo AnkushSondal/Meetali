@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Will You Be My Valentine? ❤️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .card-login {
+            max-width: 400px;
+        }
+
+        .card-main {
+            max-width: 600px;
+        }
+
+        .card-carousel {
+            max-width: 500px;
+        }
+
+        .hidden {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        .visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #e63946;
+        }
+
+        p {
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #e63946;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Buttons */
+        .buttons {
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            justify-content: flex-start;
+            font-weight: 600;
+        }
+
+        #yesBtn {
+            background: #2a9d8f;
+            color: white;
+        }
+
+        #noBtn {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(65px);
+            background: #adb5bd;
+            color: black;
+            transition:
+                left 0.25s ease-out,
+                top 0.25s ease-out,
+                transform 0.15s ease;
+        }
+
+        .success {
+            font-size: 24px;
+            color: #2a9d8f;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* Carousel */
+        #carousel {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #carousel.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .carousel-container {
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .carousel-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .carousel-container img.active {
+            display: block;
+        }
+
+        .carousel-controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .carousel-controls button {
+            background: #e63946;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- PASSCODE -->
+    <div class="card card-login visible" id="lockScreen">
+        <h1>🔒 Enter Passcode</h1>
+        <p>This page is protected ❤️</p>
+        <input type="password" id="passcode" placeholder="Enter passcode" />
+        <button class="btn-primary" onclick="checkPasscode()">Unlock</button>
+        <div class="error" id="error">Wrong passcode 💔</div>
+    </div>
+
+    <!-- VALENTINE -->
+    <div class="card card-main hidden" id="valentineScreen" style="display:none">
+        <h1>💖 Will you be my Valentine?</h1>
+        <p>I promise lots of love, laughs & chocolates 🍫</p>
+
+        <div class="buttons">
+            <button id="yesBtn" onclick="sayYes()">Yes ❤️</button>
+            <button id="noBtn">No 😢</button>
+        </div>
+
+        <div class="success" id="successMsg">
+            Yayyy!! 💕 I knew it 😍
+        </div>
+    </div>
+
+    <!-- CAROUSEL -->
+    <div class="card card-carousel hidden" id="carousel">
+        <h2>💞 Our Memories</h2>
+
+        <div class="carousel-container">
+            <img src="assets/1.png" class="active">
+            <img src="assets/2.png">
+            <img src="assets/3.png">
+            <img src="assets/4.png">
+        </div>
+
+        <div class="carousel-controls">
+            <button onclick="prevImage()">⬅ Prev</button>
+            <button onclick="nextImage()">Next ➡</button>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSCODE = "1324";
+
+        document.getElementById("passcode").addEventListener("keydown", e => {
+            if (e.key === "Enter") checkPasscode();
+        });
+
+        function checkPasscode() {
+            if (passcode.value === CORRECT_PASSCODE) {
+                lockScreen.classList.add("hidden");
+                setTimeout(() => {
+                    lockScreen.style.display = "none";
+                    valentineScreen.style.display = "block";
+                    valentineScreen.classList.remove("hidden");
+                    valentineScreen.classList.add("visible");
+                }, 500);
+            } else {
+                error.style.display = "block";
+            }
+        }
+
+        const noBtn = document.getElementById("noBtn");
+        const yesBtn = document.getElementById("yesBtn");
+        let moving = false;
+
+        function moveNoButton() {
+            if (moving) return;
+            moving = true;
+
+            const container = document.querySelector(".buttons");
+            const maxX = container.offsetWidth - noBtn.offsetWidth;
+            const maxY = container.offsetHeight - noBtn.offsetHeight;
+
+            noBtn.style.left = Math.random() * maxX + "px";
+            noBtn.style.top = Math.random() * maxY + "px";
+            noBtn.style.transform = "scale(1.1)";
+
+            setTimeout(() => {
+                noBtn.style.transform = "scale(1)";
+                moving = false;
+            }, 250);
+        }
+
+        noBtn.addEventListener("mouseenter", moveNoButton);
+        noBtn.addEventListener("touchstart", moveNoButton);
+
+        let index = 0;
+        const imgs = document.querySelectorAll(".carousel-container img");
+
+        function sayYes() {
+            successMsg.style.display = "block";
+            noBtn.style.display = "none";
+            yesBtn.style.display = "none";
+
+            setTimeout(() => {
+                valentineScreen.classList.add("hidden");
+            }, 500);
+
+            setTimeout(() => {
+                valentineScreen.style.display = "none";
+                carousel.style.display = "block";
+                carousel.classList.add("visible");
+            }, 1000);
+        }
+
+        function showImage(i) {
+            imgs.forEach((img, idx) => img.classList.toggle("active", idx === i));
+        }
+
+        function nextImage() {
+            index = (index + 1) % imgs.length;
+            showImage(index);
+        }
+
+        function prevImage() {
+            index = (index - 1 + imgs.length) % imgs.length;
+            showImage(index);
+        }
+    </script>
+
+</body>
+
+</html>
