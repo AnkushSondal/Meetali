@@ -28,7 +28,9 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 90%;
             text-align: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition:
+                opacity 0.5s ease,
+                transform 0.5s ease;
         }
 
         .card-login {
@@ -79,6 +81,7 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: transform 0.2s ease;
         }
 
         .btn-primary {
@@ -94,45 +97,50 @@
             display: none;
         }
 
-        /* Buttons */
+        /* Valentine Screen */
+        #valentineScreen {
+            display: none;
+            position: relative;
+        }
+
         .buttons {
             margin-top: 25px;
             display: flex;
-            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
             position: relative;
-            justify-content: flex-start;
-            font-weight: 600;
-        }
-
-        #yesBtn {
-            background: #2a9d8f;
-            color: white;
         }
 
         #noBtn {
             position: absolute;
-            left: 50%;
-            top: 0;
-            transform: translateX(65px);
             background: #adb5bd;
             color: black;
             transition:
                 left 0.25s ease-out,
                 top 0.25s ease-out,
                 transform 0.15s ease;
+            right: 0;
+            width: 100px;
+        }
+
+        #yesBtn {
+            background: #2a9d8f;
+            color: white;
+            position: relative;
+
         }
 
         .success {
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
             color: #2a9d8f;
             margin-top: 20px;
-            font-weight: 600;
-            display: none;
         }
 
         /* Carousel */
         #carousel {
             display: none;
+            margin-top: 20px;
             opacity: 0;
             transform: scale(0.95);
             transition: opacity 0.5s ease, transform 0.5s ease;
@@ -144,21 +152,32 @@
         }
 
         .carousel-container {
+            position: relative;
             width: 100%;
             height: 500px;
             overflow: hidden;
             border-radius: 12px;
         }
 
+        .carousel-container {
+            position: relative;
+        }
+
         .carousel-container img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: none;
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
         .carousel-container img.active {
-            display: block;
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 1;
         }
 
         .carousel-controls {
@@ -170,13 +189,15 @@
         .carousel-controls button {
             background: #e63946;
             color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- PASSCODE -->
+    <!-- PASSCODE SCREEN -->
     <div class="card card-login visible" id="lockScreen">
         <h1>🔒 Enter Passcode</h1>
         <p>This page is protected ❤️</p>
@@ -185,30 +206,43 @@
         <div class="error" id="error">Wrong passcode 💔</div>
     </div>
 
-    <!-- VALENTINE -->
-    <div class="card card-main hidden" id="valentineScreen" style="display:none">
-        <h1>💖 Will you be my Valentine?</h1>
-        <p>I promise lots of love, laughs & chocolates 🍫</p>
+    <!-- VALENTINE SCREEN -->
+    <div class="card card-main hidden" id="valentineScreen">
+        <div id="queScreen">
+            <h1>💖 Will you be my Valentine?</h1>
+            <p>I promise lots of love, laughs & chocolates 🍫</p>
 
-        <div class="buttons">
-            <button id="yesBtn" onclick="sayYes()">Yes ❤️</button>
-            <button id="noBtn">No 😢</button>
+            <div class="buttons">
+                <button id="yesBtn" onclick="sayYes()">Yes ❤️</button>
+                <button id="noBtn">No 😢</button>
+            </div>
         </div>
 
-        <div class="success" id="successMsg">
-            Yayyy!! 💕 I knew it 😍
+        <div id="successMsg" style="display:none;">
+            <video width="300" autoplay muted>
+                <source src="assets\celebration.mp4" type="video/mp4">
+            </video>
+            <div class="success">
+                Yayyy!! 💕 I knew it 😍
+            </div>
         </div>
+
+
+
     </div>
 
-    <!-- CAROUSEL -->
     <div class="card card-carousel hidden" id="carousel">
         <h2>💞 Our Memories</h2>
 
         <div class="carousel-container">
-            <img src="assets/1.png" class="active">
-            <img src="assets/2.png">
-            <img src="assets/3.png">
-            <img src="assets/4.png">
+            <img src="assets\1.png" class="active">
+            <img src="assets\2.png">
+            <img src="assets\3.png">
+            <img src="assets\4.png">
+            <img src="assets\5.png">
+            <img src="assets\6.png">
+            <img src="assets\7.png">
+            <img src="assets\8.png">
         </div>
 
         <div class="carousel-controls">
@@ -220,18 +254,33 @@
     <script>
         const CORRECT_PASSCODE = "1324";
 
-        document.getElementById("passcode").addEventListener("keydown", e => {
-            if (e.key === "Enter") checkPasscode();
+        const passcodeInput = document.getElementById("passcode");
+
+        passcodeInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                checkPasscode();
+            }
         });
 
         function checkPasscode() {
-            if (passcode.value === CORRECT_PASSCODE) {
-                lockScreen.classList.add("hidden");
+            const input = document.getElementById("passcode").value;
+            const error = document.getElementById("error");
+
+            if (input === CORRECT_PASSCODE) {
+                const lock = document.getElementById("lockScreen");
+                const valentine = document.getElementById("valentineScreen");
+
+                lock.classList.remove("visible");
+                lock.classList.add("hidden");
+
                 setTimeout(() => {
-                    lockScreen.style.display = "none";
-                    valentineScreen.style.display = "block";
-                    valentineScreen.classList.remove("hidden");
-                    valentineScreen.classList.add("visible");
+                    lock.style.display = "none";
+                    valentine.style.display = "block";
+
+                    requestAnimationFrame(() => {
+                        valentine.classList.remove("hidden");
+                        valentine.classList.add("visible");
+                    });
                 }, 500);
             } else {
                 error.style.display = "block";
@@ -239,19 +288,30 @@
         }
 
         const noBtn = document.getElementById("noBtn");
-        const yesBtn = document.getElementById("yesBtn");
+        const card = document.getElementById("valentineScreen");
+
+        // Make sure positioning works
+        card.style.position = "relative";
+        noBtn.style.position = "absolute";
+
         let moving = false;
 
         function moveNoButton() {
             if (moving) return;
             moving = true;
 
-            const container = document.querySelector(".buttons");
-            const maxX = container.offsetWidth - noBtn.offsetWidth;
-            const maxY = container.offsetHeight - noBtn.offsetHeight;
+            const cardRect = card.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            const padding = 20;
 
-            noBtn.style.left = Math.random() * maxX + "px";
-            noBtn.style.top = Math.random() * maxY + "px";
+            const maxX = cardRect.width - btnRect.width - padding;
+            const maxY = cardRect.height - btnRect.height - padding;
+
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+
+            noBtn.style.left = x + "px";
+            noBtn.style.top = y + "px";
             noBtn.style.transform = "scale(1.1)";
 
             setTimeout(() => {
@@ -260,42 +320,73 @@
             }, 250);
         }
 
+        // Triggers BEFORE click happens
         noBtn.addEventListener("mouseenter", moveNoButton);
+        noBtn.addEventListener("mousemove", moveNoButton);
         noBtn.addEventListener("touchstart", moveNoButton);
 
-        let index = 0;
-        const imgs = document.querySelectorAll(".carousel-container img");
+        let currentIndex = 0;
+        const images = () =>
+            document.querySelectorAll(".carousel-container img");
 
         function sayYes() {
-            successMsg.style.display = "block";
-            noBtn.style.display = "none";
-            yesBtn.style.display = "none";
+            document.getElementById("successMsg").style.display = "block";
+
+            // setTimeout(() => {
+            //     const carousel = document.getElementById("carousel");
+            //     carousel.style.display = "block";
+
+            //     requestAnimationFrame(() => {
+            //         carousel.classList.add("visible");
+            //     });
+            // }, 600);
+
+            const carousel = document.getElementById("carousel");
+            const valentine = document.getElementById("valentineScreen");
+
+            // const noBtn = document.getElementById("noBtn");
+            // noBtn.style.display = "none";
+            // const yesBtn = document.getElementById("yesBtn");
+            // yesBtn.style.display = "none";
+            const queScreen = document.getElementById("queScreen");
+            queScreen.style.display = "none";
+
+
 
             setTimeout(() => {
-                valentineScreen.classList.add("hidden");
-            }, 500);
+                valentine.classList.remove("visible");
+                valentine.classList.add("hidden");
+            }, 5000);
 
             setTimeout(() => {
-                valentineScreen.style.display = "none";
+                valentine.style.display = "none";
                 carousel.style.display = "block";
-                carousel.classList.add("visible");
-            }, 1000);
+
+                requestAnimationFrame(() => {
+                    carousel.classList.remove("hidden");
+                    carousel.classList.add("visible");
+                });
+            }, 5000);
         }
 
-        function showImage(i) {
-            imgs.forEach((img, idx) => img.classList.toggle("active", idx === i));
+        function showImage(index) {
+            images().forEach((img, i) => {
+                img.classList.toggle("active", i === index);
+            });
         }
 
         function nextImage() {
-            index = (index + 1) % imgs.length;
-            showImage(index);
+            currentIndex = (currentIndex + 1) % images().length;
+            showImage(currentIndex);
         }
 
         function prevImage() {
-            index = (index - 1 + imgs.length) % imgs.length;
-            showImage(index);
+            currentIndex =
+                (currentIndex - 1 + images().length) % images().length;
+            showImage(currentIndex);
         }
     </script>
+
 
 </body>
 
